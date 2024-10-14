@@ -9,3 +9,13 @@ This tool has been made for educational and testing purposes only. Any misuse or
 3) BUTTON (4)
 4) Jumper Wires or Wires
 5) Battery (options)
+## Build Button
+OK = PA13
+UP = PA27
+DOWN = PA12
+MENU = PB2
+## SSD1306
+GND = GND
+VCC = 3.3v
+SCL = PA25
+SDA = PA26
