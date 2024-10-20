@@ -19,3 +19,4 @@ This tool has been made for educational and testing purposes only. Any misuse or
 2) VCC = 3.3v
 3) SCL = PA25
 4) SDA = PA26
+# Discord sihoo.320
