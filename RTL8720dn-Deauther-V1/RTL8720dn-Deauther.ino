@@ -262,11 +262,11 @@ void loop() {
         }
   
         else if (currentMenu == SETTING_MENU) {
-            if (scrollIndex < scan_results.size() - 1) {
+            if (scrollIndex <= scan_results.size()) {
                 if (scrollIndex > 0){
                   scrollIndex--; // 스크롤 인덱스 증가
                   
-                  Serial.print("Scroll Down: ");
+                  Serial.print("UP: ");
                   Serial.println(scrollIndex);
                   selectedSSID = scan_results[scrollIndex].ssid;
                   displaySetting(); // 설정 화면 업데이트
@@ -318,7 +318,7 @@ void loop() {
                 display.display();
           }
           else if (settingMode){
-            if (scrollIndex < scan_results.size()){
+            if (scrollIndex <= scan_results.size()){
               selectedSSID = scan_results[scrollIndex].ssid;
               Serial.println(selectedSSID);
               }
@@ -439,7 +439,7 @@ void displayWiFiScanResults() {
 
     // 현재 스크롤 위치에 따라 SSID 출력
     for (int i = scrollIndex; i < scrollIndex + (SCREEN_HEIGHT / LINE_HEIGHT) - 1 && i < (int)scan_results.size(); i++) {
-        int y = (i - scrollIndex + 1) * LINE_HEIGHT; // Y좌표 계산 (1줄 내려서 Back 버튼 아래에 표시)
+        int y = (i - scrollIndex + 1) * LINE_HEIGHT;
         display.setCursor(0, y);
 
         // SSID가 비어있다면 *hidden으로 출력
@@ -449,7 +449,7 @@ void displayWiFiScanResults() {
         else {
             String ssid = scan_results[i].ssid;
             if (ssid.length() > 15) {
-                ssid = ssid.substring(0, 10) + "..."; // 길면 줄임표 사용
+                ssid = ssid.substring(0, 10) + "..."; 
             }
             display.println(String(i));
             if (i < 10){
@@ -459,11 +459,11 @@ void displayWiFiScanResults() {
               
               display.setCursor(16, y);
               }
-            display.println(ssid); // SSID 출력
+            display.println(ssid);
         }
     }
 
-    display.display(); // 화면 업데이트
+    display.display();
     Serial.println("Wi-Fi 스캔 결과 표시");
 }
 
