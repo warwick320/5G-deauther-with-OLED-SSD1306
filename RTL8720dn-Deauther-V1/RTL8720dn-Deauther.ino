@@ -397,11 +397,12 @@ void displayMenu() {
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.println("5G/2.4G Deauther :>");
+    display.println("-- 5G/2.4G Deauther ----------------------");
     display.setCursor(0, 16);
     for (int i = 0; i < MENU_COUNT; i++) {
         if (i == currentMenu) {
             display.print("> ");
+            //display.println("- ");
         }
         else {
             display.print("  ");
@@ -416,7 +417,7 @@ void displaySetting() {
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
-    display.println("Setting:");
+    display.println("Setting");
     display.setCursor(0,10);
     //display.print("Send Count: ");
     //display.println(sendCount);
