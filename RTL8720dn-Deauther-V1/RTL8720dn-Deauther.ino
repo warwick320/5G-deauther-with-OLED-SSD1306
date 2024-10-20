@@ -185,7 +185,7 @@ void loop() {
           display.setCursor(0, 20);
           display.println(selectedSSID);
           display.display();
-          while (true) {
+          while (deauther_rr) {
              WiFi.apbegin(ssid, pass, (char *) String(current_channel).c_str());
              memcpy(deauth_bssid, scan_results[i].bssid, 6);
              DEBUG_SER_PRINT("Sending Deauth-Attack on: " + scan_results[i].ssid + "\n");
@@ -417,15 +417,25 @@ void displaySetting() {
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println("Setting:");
-    display.setCursor(0, 16);
+    display.setCursor(0,10);
     //display.print("Send Count: ");
     //display.println(sendCount);
     //display.setCursor(0, 36);
     display.print("Selected SSID: ");
+    display.setCursor(0,22);
     if (selectedSSID.length() == 0){
         display.println("*hidden");
       }
-    display.println(selectedSSID);
+
+    else {
+      String SsId = selectedSSID;
+      if (selectedSSID.length() > 17) {
+        SsId = selectedSSID.substring(0, 10) + "...";
+        
+        }
+      display.println(selectedSSID);
+      }
+    //display.println(selectedSSID);
     display.display();
 }
 void displayWiFiScanResults() {
