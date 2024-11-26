@@ -12,3 +12,5 @@
 ## display
 1. SCL PA25
 2. SDA PA26
+### If you have any problems, please chat on Discord. I only check Discord.
+sihoo.320
