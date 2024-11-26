@@ -5,10 +5,10 @@
 2. BUTTONS (3)
 3. SSD1306 OLED
 # Setup
-  Board Manger version 3.1.5 ( I use this version)
-  Adafruit_SSD1306
-  Adafruit GFX
-  Tool -> Standard Lib Enable -> "Arduino_STD_PRINTF"
+  Board Manger version 3.1.5 ( I use this version)  
+  Adafruit_SSD1306  
+  Adafruit GFX  
+  Tool -> Standard Lib Enable -> "Arduino_STD_PRINTF"  
 # Connection
 ## button
 1. Up PA27
