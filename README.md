@@ -6,14 +6,13 @@ This tool has been made for educational and testing purposes only. Any misuse or
 ## Requests
 1) RTL8720dn BW16
 2) SSD1306 I2C 0.9
-3) BUTTON (4)
+3) BUTTON (3)
 4) Jumper Wires or Wires
 5) Battery (options)
 ## Build Button
 1) OK = PA13
 2) UP = PA27
 3) DOWN = PA12
-4) MENU = PB2
 ## SSD1306
 1) GND = GND
 2) VCC = 3.3v
