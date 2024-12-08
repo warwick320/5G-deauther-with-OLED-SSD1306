@@ -1,7 +1,8 @@
 
 # Bin file installation tool for bw16
 
-Press and hold “Burn” button, press then release “RST” button and release “Burn” button.
+Download tool: [This](Image_Tool)
+Press and hold `Burn` button, press then release `RST` button and release `Burn` button. to enter flash mode
 
 
 ## Step 1:
