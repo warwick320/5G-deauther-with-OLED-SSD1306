@@ -4,6 +4,8 @@
 1. RTL8720DN BW16
 2. BUTTONS (3)
 3. SSD1306 OLED
+# Install bin
+[This Link](Bins/install.md)
 # Setup
  - Board Manger version 3.1.5 ( I use this version)  
  - Adafruit_SSD1306  
