@@ -230,6 +230,10 @@ void BecaonDeauth(){
   display.display();
   while(true){
     for(int i = 0; i<scan_results.size();i++){
+      if(digitalRead(BTN_OK)==LOW){
+        delay(100);
+        break;
+      }
       String ssid1 = scan_results[i].ssid;
       const char * ssid1_cstr =ssid1.c_str();
       memcpy(becaon_bssid,scan_results[i].bssid,6);
@@ -250,6 +254,10 @@ void Becaon(){
   display.println("Becaon Attacking...");
   display.display();
   while(true){
+    if(digitalRead(BTN_OK)==LOW){
+      delay(100);
+      break;
+    }
     for(int i = 0; i<scan_results.size();i++){
       String ssid1 = scan_results[i].ssid;
       const char * ssid1_cstr =ssid1.c_str();
