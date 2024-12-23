@@ -296,6 +296,8 @@ String generateRandomString(int len){
   }
   return randstr;
 }
+char randomString[19];
+int allChannels[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 36, 40, 44, 48, 149, 153, 157, 161};
 void RandomBeacon(){
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
@@ -304,17 +306,24 @@ void RandomBeacon(){
   display.println("Random Becaon Attacking...");
   display.display();
   while (true){
+
     if(digitalRead(BTN_OK)==LOW){
       delay(50);
       break;
     }
+    int randomIndex = random(0, 19);
+    int randomChannel = allChannels[randomIndex];
     String ssid2 = generateRandomString(10);
-
+    for(int i=0;i<6;i++){
+      byte randomByte = random(0x00, 0xFF);
+      snprintf(randomString + i * 3, 4, "\\x%02X", randomByte);
+    }
+    
     const char * ssid_cstr2 = ssid2.c_str();
-    memcpy(becaon_bssid,scan_results[0].bssid,6);
-    wext_set_channel(WLAN0_NAME,scan_results[0].channel);
+    //memcpy(randomString,scan_results[0].bssid,6);
+    wext_set_channel(WLAN0_NAME,randomChannel);
     for(int x=0;x<5;x++){
-      wifi_tx_beacon_frame(becaon_bssid,(void *) "\xFF\xFF\xFF\xFF\xFF\xFF",ssid_cstr2);
+      wifi_tx_beacon_frame(randomString,(void *) "\xFF\xFF\xFF\xFF\xFF\xFF",ssid_cstr2);
     }
   }
 }
