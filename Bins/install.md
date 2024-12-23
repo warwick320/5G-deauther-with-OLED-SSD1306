@@ -1,7 +1,7 @@
 
 # Bin file installation tool for bw16
 
-Download tool: [This](Image_Tool)
+Download tool: [This](Image_Tool) Or [This](https://github.com/warwick320/5G-deauther-with-OLED-SSD1306/releases/tag/ImageTool)
 Press and hold `Burn` button, press then release `RST` button and release `Burn` button. to enter flash mode
 
 
