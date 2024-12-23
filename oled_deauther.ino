@@ -123,7 +123,7 @@ void drawssid(){
     }
     if(digitalRead(BTN_UP)==LOW){
       delay(150);
-      if(scrollindex < scan_results.size()){
+      if(scrollindex < scan_results.size() - 1){
         scrollindex++;
       }
       SelectedSSID = scan_results[scrollindex].ssid;
