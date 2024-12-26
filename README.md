@@ -12,7 +12,7 @@ This tool has been made for educational and testing purposes only. Any misuse or
 ## Requirements
 
 - SSD1306
-- 3 Buttons
+- 4 Buttons
 - BW16 Board
 
 ## Connections
@@ -21,6 +21,7 @@ This tool has been made for educational and testing purposes only. Any misuse or
 - **Up Button**: PA27  
 - **Down Button**: PA12  
 - **Select Button**: PA13  
+- **Back Button**: PB2 
 
 ### SSD1306
 - **SDA**: PA26  
