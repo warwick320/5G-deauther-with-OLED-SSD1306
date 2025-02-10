@@ -47,7 +47,3 @@ I am **not** responsible for any consequences arising from the use of this tool,
 - **SCL**: `PA25`
 
 ---
-
-### Additional Notes
-Ensure all connections are made correctly before uploading the firmware.  
-For troubleshooting, check the wiring and consult the documentation.
