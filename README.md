@@ -1,27 +1,53 @@
 # Source
 [Link](https://github.com/tesa-klebeband/RTL8720dn-Deauther)
-# DISCLAIMER
-This tool has been made for educational and testing purposes only. Any misuse or illegal activities conducted with the tool are strictly prohibited. I am **not** responsible for any consequences arising from the use of the tool, which is done at your own risk.
-# Firmware Upload Guide
+## DISCLAIMER
 
-## How to Upload Firmware
+This tool has been made for **educational** and **testing** purposes only. Any misuse or illegal activities conducted with the tool are strictly prohibited.  
+I am **not** responsible for any consequences arising from the use of this tool, which is done at your own risk.
 
-1. Download and use the upload tool provided at [Upload Tool on GitHub](https://github.com/warwick320/5G-deauther-with-OLED-SSD1306/releases).
-2. Upload the firmware using the `.ino` file.
+---
+
+## Firmware Upload Guide
+
+### Setup
+1. Open **Arduino IDE**.
+2. Click **File** > **Preferences**.
+3. Add the following Additional Boards Manager URL:  
+   `https://github.com/ambiot/ambd_arduino/raw/master/Arduino_package/package_realtek_amebad_index.json`
+4. Go to **Boards Manager** and search for **BW16**.
+5. Download the **Realtek Amebaa Boards** (version 3.1.5) manager.
+
+### How to Upload Firmware
+1. Open the `.ino` file in Arduino IDE.
+2. Click on **Tools**.
+3. Enable **Auto Upload Mode** and click **Enable**.
+4. Enable **Standard Lib** and select **Arduino_STD_PRINTF**.
+5. Click **Upload** to upload the firmware.
+
+---
 
 ## Requirements
 
-- SSD1306
-- 3 Buttons
-- BW16 Board
+- **SSD1306 Display**
+- **4 Buttons**
+- **BW16 Board**
+
+---
 
 ## Connections
 
 ### Buttons
-- **Up Button**: PA27  
-- **Down Button**: PA12  
-- **Select Button**: PA13  
+- **Up Button**: `PA27`
+- **Down Button**: `PA12`
+- **Select Button**: `PA13`
+- **Back Button**: `PB2`
 
-### SSD1306
-- **SDA**: PA26  
-- **SCL**: PA25  
+### SSD1306 Display
+- **SDA**: `PA26`
+- **SCL**: `PA25`
+
+---
+
+### Additional Notes
+Ensure all connections are made correctly before uploading the firmware.  
+For troubleshooting, check the wiring and consult the documentation.
