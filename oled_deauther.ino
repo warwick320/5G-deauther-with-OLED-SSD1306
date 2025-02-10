@@ -15,8 +15,8 @@
 #include <Wire.h>              
 #include <Adafruit_GFX.h>      
 #include <Adafruit_SSD1306.h>
+#include "bitmap.h"
 //#include <Arduino.h>
-
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
@@ -159,19 +159,19 @@ void addValue(std::vector<int>& vec,int value){
 void drawssid(){
   while(true){
     if(digitalRead(BTN_BACK)==LOW){
-      delay(150);
+      delay(70);
       break;
     }
     if(digitalRead(BTN_DOWN)==LOW && digitalRead(BTN_UP)==LOW){
-      delay(150);
+      delay(70);
       break;
     }
     if(digitalRead(BTN_OK)==LOW){
-      delay(150);
+      delay(70);
       addValue(SelectedVector,scrollindex);
     }
     if(digitalRead(BTN_UP)==LOW){
-      delay(150);
+      delay(70);
       if(BPT==0){
         BPT = millis();
         Serial.println(BPT);
@@ -197,7 +197,7 @@ void drawssid(){
       }
     }
     if(digitalRead(BTN_DOWN)==LOW){
-      delay(150);
+      delay(70);
       if(scrollindex > 0){
         scrollindex--;
       }
@@ -273,7 +273,7 @@ void Multi(){
     }
     while(SelectedVector.size()>0){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(150);
+        delay(70);
         Break = true;
         break;
       }
@@ -302,7 +302,7 @@ void Single(){
     memcpy(deauth_bssid,scan_results[scrollindex].bssid,6);
     wext_set_channel(WLAN0_NAME,scan_results[scrollindex].channel);
     if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-      delay(100);
+      delay(70);
       break;
     }
     deauth_reason = 1;
@@ -327,7 +327,7 @@ void All(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(100);
+        delay(70);
         Break = true;
         break;
       }
@@ -358,7 +358,7 @@ void BecaonDeauth(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_OK)==LOW){
-        delay(100);
+        delay(70);
         Break = true;
         break;
       }
@@ -388,7 +388,7 @@ void Becaon(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(100);
+        delay(70);
         Break = true;
         break;
       }
@@ -444,6 +444,124 @@ void RandomBeacon(){
     }
   }
 }
+void selectedmenu(String text){
+  display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
+  display.println(text);
+  display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
+}
+void drawattack(){
+  while(true){
+    if(digitalRead(BTN_BACK)==LOW) break;
+    if(digitalRead(BTN_OK)==LOW){
+      delay(70);
+      SelectionHandle(attackstate, 1);
+      break;
+    }
+    if(digitalRead(BTN_DOWN)==LOW){
+      delay(70);
+      if(attackstate > 0) attackstate--;
+    }
+    if(digitalRead(BTN_UP)==LOW){
+      delay(70);
+      if(attackstate < 4) attackstate++;
+    }
+    MenuHandle(attackstate,1);
+  }
+}
+
+void SelectionHandle(int state,int selection){
+  switch(selection){
+    case 0: //main menu
+      switch(state){
+        case 0: drawattack(); break;
+        case 1: drawscan(); break;
+        case 2: drawssid(); break;
+      }
+      break;
+    case 1: // attack menu
+      switch(state){
+        case 0: Multi(); break;
+        case 1: All(); break;
+        case 2: BecaonMenu(); break;
+        case 3: BecaonDeauth(); break;
+        case 4: break;
+      }
+      break;
+    case 2: // becaon menu
+      switch(state){
+        case 0: RandomBeacon(); break;
+        case 1: Becaon(); break;
+        case 2: break;
+      }
+      break;
+  }
+}
+void bitmapload(const unsigned char* bitmapData){
+  display.drawBitmap(0 ,0 ,bitmapData,128,64,WHITE);
+  display.display();
+}
+void MenuHandle(int handle,int set){
+  display.clearDisplay();
+  display.setTextSize(1);
+  delay(70);
+  switch(set){
+    case 0:
+      switch(handle){
+        case 0:
+          /* 
+          display.setCursor(5, 10);
+          selectedmenu("Attack");
+          display.setCursor(5, 25);
+          display.println("Scan");
+          display.setCursor(5, 40);
+          display.println("Select");
+          display.display();
+          break;
+          */
+          bitmapload(Bit_deauther_logo_attack);
+          break;
+        case 1:
+          bitmapload(Bit_deauther_logo_Scan);
+          break;
+        case 2:
+          bitmapload(Bit_deauther_logo_Select);
+          break;      
+      }
+      break;
+    case 1: //attack
+      switch(handle){
+        case 0:
+          bitmapload(Bit_deauther_Deauth);
+          break;
+        case 1:
+          bitmapload(Bit_deauther_All);
+          break;
+        case 2:
+          bitmapload(Bit_deauther_Becaon);
+          break;
+        case 3:
+          bitmapload(Bit_deauther_BeccaonDeauth);
+          break;
+        case 4:
+          bitmapload(Bit_deauther_back2);
+          break;
+      }
+      break;
+    case 2: // becaon
+      switch(handle){
+        case 0: 
+          bitmapload(Bit_deauther_Random);
+          break;
+        case 1:
+          bitmapload(Bit_deauther_copyap);
+          break;
+        case 2:
+          bitmapload(Bit_deauther_BecaonBack);
+          break;          
+      }
+      break;
+  }
+}
 int becaonstate = 0;
 void BecaonMenu(){
   while(true){
@@ -451,261 +569,35 @@ void BecaonMenu(){
       break;
     }
     if(digitalRead(BTN_OK)==LOW){
-      delay(120);
-      if(becaonstate == 0){
-        RandomBeacon();
-        break;
-      }
-      if(becaonstate == 1){
-        Becaon();
-        break;
-      }
-      if(becaonstate == 2){
-        break;
-      }
-    }
-    if(digitalRead(BTN_DOWN)==LOW){
-      delay(120);
-      if(becaonstate > 0){
-        becaonstate--;
-      }
-    }
-    if(digitalRead(BTN_UP)==LOW){
-      delay(120);
-      if(becaonstate < 2){
-        becaonstate++;
-      }
-    }
-    if(becaonstate == 0){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      selectedmenu("Random Beacon Attack");
-      display.setCursor(5, 15);
-      display.println("Same Beacon Attack");
-      display.setCursor(5, 25);
-      display.println("< Back >");
-      display.display();      
-    }
-    if(becaonstate == 1){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Random Beacon Attack");
-      display.setCursor(5, 15);
-      selectedmenu("Same Beacon Attack");
-      display.setCursor(5, 25);
-      display.println("< Back >");
-      display.display();
-    }
-    if(becaonstate == 2){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Random Beacon Attack");
-      display.setCursor(5, 15);
-      display.println("Same Beacon Attack");
-      display.setCursor(5, 25);
-      selectedmenu("< Back >");
-      display.display();      
-    }    
-  }
-}
-void drawattack(){
-  while(true){
-    if(digitalRead(BTN_BACK)==LOW){
+      delay(70);
+      SelectionHandle(becaonstate,2);
       break;
     }
-    if(digitalRead(BTN_OK)==LOW){
-      delay(150);
-      if(attackstate == 0){
-        Multi();
-        break;
-      }
-      if(attackstate == 1){
-        All();
-        break;
-      }
-      if(attackstate == 2){
-        BecaonMenu();
-        break;
-      }
-      if(attackstate == 3){
-        BecaonDeauth();
-        break;
-      }
-      if(attackstate == 4){
-        break;
-      }
-    }
     if(digitalRead(BTN_DOWN)==LOW){
-      delay(120);
-      if(attackstate > 0){
-        attackstate--;
-      }
+      delay(70);
+      if(becaonstate > 0) becaonstate--;
     }
-    if(digitalRead(BTN_UP)==LOW){
-      delay(120);
-      if(attackstate < 4){
-        attackstate++;
-      }
-    }
-    if (attackstate == 0){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      selectedmenu("Deauth Attack");
-      display.setCursor(5, 15);
-      display.println("All Deauth Attack");
-      display.setCursor(5, 25);
-      display.println("Becaon Attack");
-      display.setCursor(5, 35);
-      display.println("Becaon&Deauth Attack");
-      display.setCursor(5, 45);
-      display.println("< Back >");
-      display.display();
-    }
-    if (attackstate == 1){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Deauth Attack");
-      display.setCursor(5, 15);
-      selectedmenu("All Deauth Attack");
-      display.setCursor(5, 25);
-      display.println("Becaon Attack");
-      display.setCursor(5, 35);
-      display.println("Becaon&Deauth Attack");
-      display.setCursor(5, 45);
-      display.println("< Back >");
-      display.display();
-    }
-    if (attackstate == 2){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Deauth Attack");
-      display.setCursor(5, 15);
-      display.println("All Deauth Attack");
-      display.setCursor(5, 25);
-      selectedmenu("Becaon Attack");
-      display.setCursor(5, 35);
-      display.println("Becaon&Deauth Attack");
-      display.setCursor(5, 45);
-      display.println("< Back >");
-      display.display();
-    }
-    if (attackstate == 3){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Deauth Attack");
-      display.setCursor(5, 15);
-      display.println("All Deauth Attack");
-      display.setCursor(5, 25);
-      display.println("Becaon Attack");
-      display.setCursor(5, 35);
-      selectedmenu("Becaon&Deauth Attack");
-      display.setCursor(5, 45);
-      display.println("< Back >");
-      display.display();
-    }
-    if (attackstate == 4){
-      delay(50);
-      display.clearDisplay();
-      display.setTextSize(1);
-      display.setCursor(5, 5);
-      display.println("Deauth Attack");
-      display.setCursor(5, 15);
-      display.println("All Deauth Attack");
-      display.setCursor(5, 25);
-      display.println("Becaon Attack");
-      display.setCursor(5, 35);
-      display.println("Becaon&Deauth Attack");
-      display.setCursor(5, 45);
-      selectedmenu("< Back >");
-      display.display();
-    }
-  }
-}
-void selectedmenu(String text){
-  display.setTextColor(SSD1306_BLACK,SSD1306_WHITE);
-  display.println(text);
-  display.setTextColor(SSD1306_WHITE,SSD1306_BLACK);
-}
-void loop(){
 
-  if(menustate == 0){
-    delay(50);
-    display.clearDisplay();
-    display.setTextSize(1.7);
-    display.setCursor(5, 10);
-    selectedmenu("Attack");
-    display.setCursor(5, 25);
-    display.println("Scan");
-    display.setCursor(5, 40);
-    display.println("Select");
-    display.display();
-  }
-  if(menustate == 1){
-    delay(50);
-    display.clearDisplay();
-    display.setTextSize(1.7);
-    display.setCursor(5, 10);
-    display.println("Attack");
-    display.setCursor(5, 25);
-    selectedmenu("Scan");
-    display.setCursor(5, 40);
-    display.println("Select");
-    display.display();
-  }
-  if(menustate == 2){
-    delay(50);
-    display.clearDisplay();
-    display.setTextSize(1.7);
-    display.setCursor(5, 10);
-    display.println("Attack");
-    display.setCursor(5, 25);
-    display.println("Scan");
-    display.setCursor(5, 40);
-    selectedmenu("Select");
-    display.display();
-  }
-  if(digitalRead(BTN_OK)==LOW){
-    delay(150);
-    if(okstate){
-      if(menustate== 0){
-        drawattack();
-      }
-      if(menustate== 1){
-        drawscan();
-      }
-      if(menustate== 2){
-        drawssid();
-      }
+    if(digitalRead(BTN_UP)==LOW){
+      delay(70);
+      if(becaonstate < 2) becaonstate++;
     }
+    MenuHandle(becaonstate,2);
+  }
+}
+
+void loop(){
+  MenuHandle(menustate,0);
+  if(digitalRead(BTN_OK)==LOW){
+    delay(70);
+    if(okstate) SelectionHandle(menustate,0);
   }
   if(digitalRead(BTN_DOWN)==LOW){
-    delay(150); 
-    if(menuscroll){
-      if(menustate > 0){
-        menustate--;
-      }
-    }
+    delay(70); 
+    if(menuscroll && menustate > 0) menustate--;
   }
   if(digitalRead(BTN_UP)==LOW){
-    delay(150);
-    if(menuscroll){
-      if(menustate < 2){
-        menustate++;
-      }
-    }
+    delay(70);
+    if(menuscroll && menustate < 2) menustate++;
   }
 }
