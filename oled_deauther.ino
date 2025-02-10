@@ -159,19 +159,19 @@ void addValue(std::vector<int>& vec,int value){
 void drawssid(){
   while(true){
     if(digitalRead(BTN_BACK)==LOW){
-      delay(70);
+      delay(110);
       break;
     }
     if(digitalRead(BTN_DOWN)==LOW && digitalRead(BTN_UP)==LOW){
-      delay(70);
+      delay(110);
       break;
     }
     if(digitalRead(BTN_OK)==LOW){
-      delay(70);
+      delay(110);
       addValue(SelectedVector,scrollindex);
     }
     if(digitalRead(BTN_UP)==LOW){
-      delay(70);
+      delay(110);
       if(BPT==0){
         BPT = millis();
         Serial.println(BPT);
@@ -273,7 +273,7 @@ void Multi(){
     }
     while(SelectedVector.size()>0){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(70);
+        delay(110);
         Break = true;
         break;
       }
@@ -302,7 +302,7 @@ void Single(){
     memcpy(deauth_bssid,scan_results[scrollindex].bssid,6);
     wext_set_channel(WLAN0_NAME,scan_results[scrollindex].channel);
     if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-      delay(70);
+      delay(110);
       break;
     }
     deauth_reason = 1;
@@ -327,7 +327,7 @@ void All(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(70);
+        delay(110);
         Break = true;
         break;
       }
@@ -358,7 +358,7 @@ void BecaonDeauth(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_OK)==LOW){
-        delay(70);
+        delay(110);
         Break = true;
         break;
       }
@@ -388,7 +388,7 @@ void Becaon(){
     }
     for(int i = 0; i<scan_results.size();i++){
       if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-        delay(70);
+        delay(110);
         Break = true;
         break;
       }
@@ -425,7 +425,7 @@ void RandomBeacon(){
   while (true){
 
     if(digitalRead(BTN_OK)==LOW | digitalRead(BTN_BACK)==LOW){
-      delay(50);
+      delay(110);
       break;
     }
     int randomIndex = random(0, 19);
@@ -453,16 +453,16 @@ void drawattack(){
   while(true){
     if(digitalRead(BTN_BACK)==LOW) break;
     if(digitalRead(BTN_OK)==LOW){
-      delay(70);
+      delay(110);
       SelectionHandle(attackstate, 1);
       break;
     }
     if(digitalRead(BTN_DOWN)==LOW){
-      delay(70);
+      delay(110);
       if(attackstate > 0) attackstate--;
     }
     if(digitalRead(BTN_UP)==LOW){
-      delay(70);
+      delay(110);
       if(attackstate < 4) attackstate++;
     }
     MenuHandle(attackstate,1);
@@ -503,7 +503,7 @@ void bitmapload(const unsigned char* bitmapData){
 void MenuHandle(int handle,int set){
   display.clearDisplay();
   display.setTextSize(1);
-  delay(70);
+  delay(110);
   switch(set){
     case 0:
       switch(handle){
@@ -569,17 +569,17 @@ void BecaonMenu(){
       break;
     }
     if(digitalRead(BTN_OK)==LOW){
-      delay(70);
+      delay(110);
       SelectionHandle(becaonstate,2);
       break;
     }
     if(digitalRead(BTN_DOWN)==LOW){
-      delay(70);
+      delay(110);
       if(becaonstate > 0) becaonstate--;
     }
 
     if(digitalRead(BTN_UP)==LOW){
-      delay(70);
+      delay(110);
       if(becaonstate < 2) becaonstate++;
     }
     MenuHandle(becaonstate,2);
@@ -589,15 +589,15 @@ void BecaonMenu(){
 void loop(){
   MenuHandle(menustate,0);
   if(digitalRead(BTN_OK)==LOW){
-    delay(70);
+    delay(110);
     if(okstate) SelectionHandle(menustate,0);
   }
   if(digitalRead(BTN_DOWN)==LOW){
-    delay(70); 
+    delay(110); 
     if(menuscroll && menustate > 0) menustate--;
   }
   if(digitalRead(BTN_UP)==LOW){
-    delay(70);
+    delay(110);
     if(menuscroll && menustate < 2) menustate++;
   }
 }
